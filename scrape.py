@@ -6,6 +6,18 @@ import os, sys
 
 
 
+"""Website to scrape: http://www.agriculture.gov.au/pests-diseases-weeds/plant#identify-pests-diseases 
+Data format: Excel 
+Fields: Disease name - Image link - Origin - See if you can identify the pest - Check what can legally come into Australia - Secure any suspect specimens 
+Output data: 
+- Submit the extracted Excel data 
+- Submit your code 
+
+Bonus points: 
+- Download the images programmatically and link them in the Excel sheet locally. 
+- Host the data back as a web page using the data from excel. """
+
+
 
 """Take url as argument and returns BeautifulSoup."""
 def get_soup(url):
@@ -17,7 +29,7 @@ def get_soup(url):
 
 
 class Write(object):
-    """docstring for ."""
+    """Writes the data to excel and creates webpages for every disease"""
     def __init__(self, disease_name, local_images,origin,identify_the_pest,legally_come_into_australia, suspect_specimens, image_links):
         self.disease_name =  disease_name
         self.local_images = local_images
@@ -81,7 +93,7 @@ class Write(object):
             f.close()
 
 class Scrape(object):
-    """docstring for ."""
+    """fethes every field"""
     def __init__(self, soup):
         self.soup = soup
 
@@ -172,10 +184,15 @@ def run(url):
     disease_name = []
     image_links = []
 
+
+    """fetch given page then 
+    fetch all links of diseases from that page"""
     soup = get_soup(url)
     scrape = Scrape(soup)
     links = scrape.links()
 
+
+    """for each disease fetch its name, origin, etc"""
     for link in links:
 
         print(link)
@@ -199,12 +216,15 @@ def run(url):
 
             identify_the_pest.append(scrape.identify_the_pest())
 
+
+    """write the data(in lists format) to excel(fields) """
     write = Write(disease_name, local_images,origin,identify_the_pest,legally_come_into_australia, suspect_specimens, image_links)
     write.to_excel()
     write.to_html()
 
 def main():
     url= "http://www.agriculture.gov.au/pests-diseases-weeds/plant#identify-pests-diseases"
+    """driver function of the program"""
     run(url)
 
 if __name__ == '__main__':
